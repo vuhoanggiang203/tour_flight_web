@@ -50,7 +50,7 @@ export default function BlogList() {
       <h1 className="text-3xl font-extrabold text-gray-900 mb-6 border-b-2 pb-2">Quản lý Blog</h1>
       
       <div className="mb-6">
-        <Link href="/admin/blog/create" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+        <Link href="/admin/blog/createBlog" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
           + Tạo mới Blog
         </Link>
       </div>

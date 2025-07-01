@@ -1,10 +1,48 @@
 import  connectDB  from '@/app/lib/db';
 import { NextResponse } from 'next/server';
 
-export async function GET(req, { params }) {
-  const db = await connectDB();
-  const [rows] = await db.query('SELECT * FROM Bookings WHERE id = ?', [params.id]);
-  return NextResponse.json(rows[0]);
+export async function GET(request, { params }) {
+  try {
+    const db = await connectDB();
+    const { id } = params;
+
+    if (!id) {
+      return NextResponse.json({ error: 'Thiếu booking id' }, { status: 400 });
+    }
+
+    // Lấy chi tiết booking + JOIN tour nếu là tour
+    const [bookingRows] = await db.query(
+      `SELECT b.*, 
+              t.title AS tour_title, 
+              t.location AS tour_location, 
+              t.duration AS tour_duration 
+       FROM bookings b
+       LEFT JOIN tours t ON b.tour_id = t.id
+       WHERE b.id = ?`,
+      [id]
+    );
+
+    if (bookingRows.length === 0) {
+      return NextResponse.json({ error: 'Không tìm thấy booking này.' }, { status: 404 });
+    }
+
+    const booking = bookingRows[0];
+
+    // Lấy danh sách passenger theo booking_id
+    const [passengers] = await db.query(
+      `SELECT full_name, gender, dob 
+       FROM passenger_info 
+       WHERE booking_id = ?`,
+      [id]
+    );
+
+    booking.passengers = passengers;
+
+    return NextResponse.json(booking);
+  } catch (error) {
+    console.error("Error fetching booking detail:", error);
+    return NextResponse.json({ error: 'Lỗi server' }, { status: 500 });
+  }
 }
 
 export async function PUT(req, { params }) {

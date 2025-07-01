@@ -72,7 +72,7 @@ const id = params.id; // Lấy ID từ URL
     }
 
     const result = await response.json();
-    setFormData(prev => ({ ...prev, image: `/images/${result.filename}` }));
+    setFormData(prev => ({ ...prev, image: `${result.filename}` }));
     setUploading(false);
   } catch (err) {
     console.error('Lỗi mạng khi tải ảnh:', err);
@@ -176,6 +176,7 @@ const id = params.id; // Lấy ID từ URL
             id="description"
             name="description"
             value={formData.description}
+            required
             onChange={handleChange}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
@@ -188,6 +189,7 @@ const id = params.id; // Lấy ID từ URL
             type="text"
             id="location"
             name="location"
+            
             value={formData.location}
             onChange={handleChange}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -216,6 +218,7 @@ const id = params.id; // Lấy ID từ URL
             type="text"
             id="duration"
             name="duration"
+            required
             value={formData.duration}
             onChange={handleChange}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -228,6 +231,7 @@ const id = params.id; // Lấy ID từ URL
           <input
             type="file"
             id="image"
+            
             name="image"
             onChange={handleImageChange}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -241,7 +245,7 @@ const id = params.id; // Lấy ID từ URL
           )}
           {formData.image && !previewImage && !uploadError && (
             <div className="mt-2">
-              <img src={formData.image} alt="Ảnh đã tải lên" className="max-w-full h-auto rounded" />
+              <img src={`/image/${formData.image}`} alt="Ảnh đã tải lên" className="max-w-full h-auto rounded" />
             </div>
           )}
         </div>
@@ -252,6 +256,7 @@ const id = params.id; // Lấy ID từ URL
           <input
             type="number"
             id="discount_percentage"
+            required
             name="discount_percentage"
             value={formData.discount_percentage}
             onChange={handleChange}

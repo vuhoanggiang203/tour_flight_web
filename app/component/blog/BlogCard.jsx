@@ -3,10 +3,15 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function BlogCard({ blog }) {
+  if (!blog) {
+    return null; // Return null if blog data is not available
+  }
+  
+
   return (
     <Link href={`/blog/${blog.slug}`} className="block rounded shadow hover:shadow-lg transition overflow-hidden bg-white">
       <Image
-        src={blog.image}
+        src="/image/halong-blog.jpg"
         alt={blog.title}
         width={500}
         height={300}

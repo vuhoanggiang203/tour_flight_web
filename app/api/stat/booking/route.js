@@ -48,8 +48,7 @@ export async function GET(request) {
         ORDER BY name ASC;
       `;
     } else {
-      // Xử lý trường hợp filter không hợp lệ
-      await db.end(); // Đóng kết nối database trước khi trả về lỗi
+     
       return NextResponse.json({ message: 'Tham số filter không hợp lệ.' }, { status: 400 });
     }
 
@@ -57,10 +56,10 @@ export async function GET(request) {
     const [rows] = await db.execute(query, queryParams);
 
     // Đóng kết nối database
-    await db.end();
+   
 
     // Trả về dữ liệu JSON
-    return NextResponse.json(rows);
+    return NextResponse.json(rows, { status: 200 });
 
   } catch (error) {
     console.error('Lỗi trong API /api/stat/booking:', error);

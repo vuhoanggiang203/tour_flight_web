@@ -32,17 +32,7 @@ export default function Dashboard() {
       {/* Header */}
       <header className="mb-8">
         <h1 className="text-2xl font-bold text-gray-800">Bảng điều khiển</h1>
-        <div className="flex mt-4 space-x-4">
-          {['overview'].map((tab) => (
-            <button
-              key={tab}
-              className={`px-4 py-2 rounded-md ${activeTab === tab ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          ))}
-        </div>
+       
       </header>
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
       <RevenueCard />

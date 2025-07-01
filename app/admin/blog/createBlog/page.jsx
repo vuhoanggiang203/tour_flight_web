@@ -62,7 +62,7 @@ export default function AddNewBlogPage() {
       }
 
       const result = await response.json();
-      setFormData(prev => ({ ...prev, image_url: `/images/${result.filename}` }));
+      setFormData(prev => ({ ...prev, image_url: `${result.filename}` }));
       setUploading(false);
     } catch (err) {
       console.error('Lỗi mạng:', err);
@@ -142,6 +142,7 @@ export default function AddNewBlogPage() {
             type="file"
             id="image"
             name="image"
+            required
             onChange={handleImageChange}
             className="shadow border rounded w-full py-2 px-3"
           />

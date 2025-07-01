@@ -8,19 +8,21 @@ export default function BookingChart() {
   const [data, setData] = useState([])
   const [filter, setFilter] = useState('month')
   const [type, setType] = useState('tour')
+useEffect(() => {
+  const fetchData = async () => {
+    const res = await fetch(`/api/stat/booking?filter=${filter}&type=${type}`)
+    const json = await res.json()
+    console.log(json)
+    setData(json.map(item => ({
+     label: filter === 'month'
+  ? `${item.name.split('-')[1]}/${item.name.split('-')[0]}` // "03/2024"
+  : `Năm ${item.name}`,
+      count: item.count
+    })))
+  }
+  fetchData()
+}, [filter, type])
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(`/api/stat/booking?filter=${filter}&type=${type}`)
-      const json = await res.json()
-      console.log(json);
-      setData(json.map(item => ({
-        label: filter === 'month' ? `Tháng ${item.label}` : `Năm ${item.label}`,
-        count: item.count
-      })))
-    }
-    fetchData()
-  }, [filter, type])
 
   return (
     <div className="p-4 bg-white rounded shadow-md">
@@ -33,17 +35,17 @@ export default function BookingChart() {
     w-full
     px-4
     py-2
-    pr-8             {/* Tạo khoảng trống cho mũi tên tùy chỉnh */}
+    pr-8             
     leading-tight
     bg-white
     border border-gray-300
     rounded-md
-    shadow-sm        {/* Thêm đổ bóng nhẹ */}
+    shadow-sm        
     focus:outline-none
-    focus:ring-2     {/* Hiệu ứng khi focus */}
+    focus:ring-2    
     focus:ring-blue-500
     focus:border-blue-500
-    appearance-none  {/* Ẩn mũi tên mặc định của trình duyệt */}
+    appearance-none  
     text-gray-700
     cursor-pointer
   "

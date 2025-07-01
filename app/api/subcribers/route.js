@@ -5,7 +5,7 @@ export async function GET() {
     // Kết nối cơ bản – thay thông tin của bạn vào
     const pool = await connectDB();
     const [rows] = await pool.execute('SELECT * FROM newslettersubscribers ORDER BY subscribed_at DESC');
-    await pool.end();
+    
     return new Response(JSON.stringify(rows), {
       status: 200,
       headers: {
@@ -14,9 +14,7 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Database error:', error);
-    return new Response(JSON.stringify({ message: 'Error fetching subscribers' }), {
-      status: 500,
-    });
+    return NextResponse.json(subscribers || [], { status: 200 });
   }
 }
 export async function POST(req) {

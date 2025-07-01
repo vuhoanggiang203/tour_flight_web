@@ -1,22 +1,23 @@
 import connectDB  from '@/app/lib/db';
-
-export async function GET(req, { params }) {
+import { NextResponse } from 'next/server';
+export async function GET(request, { params }) {
   const { id } = params;
   const db = await connectDB();
   try {
-    const [rows] = await db.execute('SELECT * FROM blogposts WHERE id = ?', [id]);
+    const [rows] = await db.execute(
+      'SELECT * FROM blogposts WHERE id = ? LIMIT 1',
+      [id]
+    );
 
     if (rows.length === 0) {
-      return NextResponse.json({ message: 'Không tìm thấy bài viết' }, { status: 404 });
+      return NextResponse.json({ message: 'Blog not found' }, { status: 404 });
     }
-    console.log('Truy vấn với id:', id);
-    console.log('Kết quả trả về:', rows);
-    return NextResponse.json(rows[0]);
+
+    return NextResponse.json(rows[0], { status: 200 });
   } catch (error) {
-    console.error('Lỗi khi lấy chi tiết blog:', error);
-    return NextResponse.json({ message: 'Lỗi server' }, { status: 500 });
+    console.error('DB Error:', error);
+    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
- 
 }
 export async function DELETE(req, { params }) {
   const id = params.id;
@@ -44,3 +45,33 @@ export async function DELETE(req, { params }) {
     });
   }
 }
+
+
+export async function PUT(request, { params }) {
+  const { id } = params;
+  const body = await request.json();
+  const { title, slug, content, image_url } = body;
+
+  if (!title || !slug || !content) {
+    return NextResponse.json({ error: 'Thiếu dữ liệu bắt buộc.' }, { status: 400 });
+  }
+
+  try {
+    const db = await connectDB();
+
+    const [result] = await db.query(
+      'UPDATE blogposts SET title = ?, slug = ?, content = ?, image_url = ? WHERE id = ?',
+      [title, slug, content, image_url || null, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return NextResponse.json({ error: 'Không tìm thấy bài viết để cập nhật.' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: 'Cập nhật bài viết thành công.' });
+  } catch (err) {
+    console.error('Lỗi khi cập nhật bài viết:', err);
+    return NextResponse.json({ error: 'Lỗi máy chủ.' }, { status: 500 });
+  }
+}
+

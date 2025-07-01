@@ -26,16 +26,19 @@ export default  function Header({ user }) {
         </Link>
         {/* Menu */}
         <nav className="flex gap-8 items-center">
-          <Link href="/tour" className="hover:text-yellow-500">
+          <Link href="/" className="hover:text-yellow-500 hover:underline hover:transition x transition  font-semibold">
+            Trang chủ 
+          </Link>
+          <Link href="/tour" className="hover:text-yellow-500 hover:underline hover:transition transition font-semibold">
             Điểm đến
           </Link>
-          <Link href="/flight" className="hover:text-yellow-500">
+          <Link href="/flight" className="hover:text-yellow-500 hover:underline hover:transition transition font-semibold">
             Các chuyến bay
           </Link>
-          <Link href="/about" className="hover:text-yellow-500">
+          <Link href="/about" className="hover:text-yellow-500 hover:underline hover:transition transition font-semibold">
             Về chúng tôi
           </Link>
-          <Link href="/blog" className="hover:text-yellow-500">
+          <Link href="/blog" className="hover:text-yellow-500 hover:underline hover:transition transition font-semibold">
             Cẩm nang du lịch
           </Link>
         </nav>

@@ -72,10 +72,6 @@ export async function GET() {
       { message: 'Đã xảy ra lỗi server khi tính toán doanh thu.', error: error.message },
       { status: 500 }
     );
-  } finally {
-    // Đảm bảo kết nối database được đóng, bất kể có lỗi hay không
-    if (db) {
-      await db.end();
-    }
   }
+  
 }

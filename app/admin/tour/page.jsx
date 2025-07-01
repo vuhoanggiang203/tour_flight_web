@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
+import ModalComfirmDeleteTour from '@/app/component/ModalComfirmDeleteTour';
 
 // Component UI cơ bản
 const Table = ({ children }) => (
@@ -37,10 +37,26 @@ export default function TourManagement() {
   // Dữ liệu mẫu
   const [tours, setTours] = useState([]);
   useEffect(() => {
-  fetch('/api/tour')
-    .then(res => res.json())
-    .then(data => setTours(data));
-}, []);
+    const fetchTours = async () => {
+      try {
+        const res = await fetch('/api/tour');
+        const data = await res.json();
+
+        // Kiểm tra data có phải mảng không
+        if (Array.isArray(data)) {
+          setTours(data);
+        } else {
+          console.error('Dữ liệu trả về không phải mảng:', data);
+          setTours([]); // fallback an toàn
+        }
+      } catch (error) {
+        console.error('Lỗi khi fetch dữ liệu tour:', error);
+        setTours([]); // fallback khi lỗi
+      }
+    };
+
+    fetchTours();
+  }, []);
 
   
   
@@ -51,6 +67,35 @@ export default function TourManagement() {
     duration: '',
     status: 'active'
   });
+  const toggleTourStatus = async (tour) => {
+  const updatedStatus = !tour.status;
+
+  try {
+    const res = await fetch(`/api/tour/${tour.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status: updatedStatus }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert('Cập nhật trạng thái thành công!');
+      setTours((prev) =>
+        prev.map((t) =>
+          t.id === tour.id ? { ...t, status: updatedStatus } : t
+        )
+      );
+    } else {
+      alert('Lỗi cập nhật trạng thái: ' + data.error);
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Lỗi server khi cập nhật trạng thái');
+  }
+};
 
   // Xử lý form
   const handleInputChange = (e) => {
@@ -94,7 +139,6 @@ export default function TourManagement() {
   };
 
  const handleDelete = async (id) => {
-  if (!confirm('Bạn có chắc chắn muốn xoá tour này?')) return;
 
   try {
     const res = await fetch(`/api/tour/${id}`, {
@@ -120,59 +164,74 @@ export default function TourManagement() {
 };
 
 
+  // State cho modal xác nhận xóa
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentTour, setCurrentTour] = useState(null);
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">Quản lý Tour</h1>
-        <Link href="/admin/tour/addtour">
-        <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4">
+    
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-800">Quản lý Tour</h1>
+          <Link href="/admin/tour/addtour">
+            <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4">
           Thêm mới Tour
-        </button>
-      </Link>
-      </div>
+            </button>
+          </Link>
+        </div>
 
-      {/* Bảng danh sách tour */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <Table>
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="py-3 px-4 text-left">ID</th>
-              <th className="py-3 px-4 text-left">Tên Tour</th>
-              <th className="py-3 px-4 text-left">Địa điểm</th>
-              <th className="py-3 px-4 text-left">Giá</th>
-              <th className="py-3 px-4 text-left">Thời lượng</th>
-              <th className="py-3 px-4 text-left">Giảm giá</th>
-              <th className="py-3 px-4 text-left">Hành động</th>
+        <div className="bg-white rounded-lg shadow p-6">
+          <Table>
+            <thead className="bg-gray-100">
+          <tr>
+            <th className="py-3 px-4 text-left">ID</th>
+            <th className="py-3 px-4 text-left">Tên Tour</th>
+            <th className="py-3 px-4 text-left">Địa điểm</th>
+            <th className="py-3 px-4 text-left">Giá</th>
+            <th className="py-3 px-4 text-left">Thời lượng</th>
+            <th className="py-3 px-4 text-left">Giảm giá</th>
+            <th className="py-3 px-4 text-left">Hành động</th>
+            <th className="py-3 px-4 text-left">Trạng thái</th>
+          </tr>
+            </thead>
+            <tbody>
+          {tours.map(tour => (
+            <tr key={tour.id} className="border-b hover:bg-gray-50">
+              <td className="py-3 px-4">{tour.id}</td>
+              <td className="py-3 px-4 font-medium">{tour.title}</td>
+              <td className="py-3 px-4">{tour.location}</td>
+              <td className="py-3 px-4">{Number(tour.price).toLocaleString('vi-VN')} VNĐ</td>
+              <td className="py-3 px-4">{tour.duration}</td>
+              <td className="py-3 px-4">
+            {tour.discount_percentage ? `${tour.discount_percentage}%` : 'Không có'}
+              </td>
+              <td className="py-3 px-4 space-x-2">
+            <Link href={`/admin/tour/${tour.id}`}>
+              <Button variant="outline">Sửa</Button>
+            </Link>
+              </td>
+              <td className="py-3 px-4">
+            <button
+              onClick={() => toggleTourStatus(tour)}
+              className={`px-4 py-2 rounded-md font-semibold transition-colors duration-200
+                ${tour.status === 'active'
+              ? 'bg-red-500 hover:bg-red-600 text-white border border-red-600'
+              : 'bg-green-500 hover:bg-green-600 text-white border border-green-600'
+                }
+              `}
+            >
+              {tour.status === 'active' ? 'Vô hiệu hóa' : 'Bật lại'}
+            </button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {tours.map(tour => (
-              <tr key={tour.id} className="border-b hover:bg-gray-50">
-                <td className="py-3 px-4">{tour.id}</td>
-                <td className="py-3 px-4 font-medium">{tour.title}</td>
-                <td className="py-3 px-4">{tour.location}</td>
-                <td className="py-3 px-4">{tour.price.toLocaleString()} VNĐ</td>
-                <td className="py-3 px-4">{tour.duration}</td>
-                <td className="py-3 px-4">
-                  {tour.discount_percentage ? `${tour.discount_percentage}%` : 'Không có'}
-                </td>
-                <td className="py-3 px-4 space-x-2">
-                  
-                  <Link href={`/admin/tour/${tour.id}`}>
-                    <Button variant="outline">Sửa</Button>
-                  </Link>
-                  
-                  <Button variant="danger" onClick={() => handleDelete(tour.id)}>Xóa</Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </div>
+          ))}
+            </tbody>
+          </Table>
+        </div>
 
-      {/* Modal thêm/sửa tour */}
-     
+       
+   
+
     </div>
   );
 }

@@ -3,18 +3,39 @@ import { NextResponse } from 'next/server'
 import connectDB from '@/app/lib/db'
 
 // GET by ID
-export async function GET(_, { params }) {
+
+
+export async function GET(request, { params }) {
   try {
-    const db = await connectDB()
-    const [rows] = await db.query('SELECT * FROM tours WHERE id = ?', [params.id])
-    if (rows.length === 0) {
-      return NextResponse.json({ error: 'Tour không tồn tại' }, { status: 404 })
+    const db = await connectDB();
+    const { id } = params;
+
+    if (!id) {
+      return NextResponse.json({ error: 'id của tour không được cung cấp.' }, { status: 400 });
     }
-    return NextResponse.json(rows[0])
+
+    const [rows] = await db.query('SELECT * FROM tours WHERE id = ?', [id]);
+
+    if (rows.length === 0) {
+      return NextResponse.json({ error: 'Không tìm thấy tour với id này.' }, { status: 404 });
+    }
+
+    return NextResponse.json(rows[0]);
   } catch (error) {
-    return NextResponse.json({ error: 'Lỗi khi lấy tour' }, { status: 500 })
+    console.error("Error fetching single tour:", error);
+    return NextResponse.json(
+      { error: 'Lỗi khi lấy thông tin chi tiết tour từ database.' },
+      { status: 500 }
+    );
   }
 }
+
+
+
+// Bạn có thể thêm PUT (cập nhật) hoặc DELETE (xóa) tour ở đây nếu cần
+// Ví dụ:
+// export async function PUT(request, { params }) { ... }
+// export async function DELETE(request, { params }) { ... }
 
 // PUT: Update
 export async function PUT(req, { params }) {
@@ -40,12 +61,32 @@ export async function PUT(req, { params }) {
 }
 
 // DELETE
-export async function DELETE(_, { params }) {
+export async function DELETE(req, { params }) {
+  const tourId = Number(params.id);
+  console.log("Tour ID nhận được:", tourId);
   try {
     const db = await connectDB()
-    const [rows] = await db.query('DELETE  FROM tours WHERE id = ?', [params.id])
+    const [rows] = await db.query('DELETE FROM tours WHERE id = ?', [tourId])
     return NextResponse.json({ message: 'Tour đã được xoá' })
   } catch (error) {
     return NextResponse.json({ error: 'Lỗi khi xoá tour' }, { status: 500 })
   }
 }
+export async function PATCH(req, { params }) {
+  const tourId = Number(params.id);
+  const { status } = await req.json();
+
+  try {
+    const db = await connectDB();
+    const [result] = await db.query(
+      'UPDATE tours SET status = ? WHERE id = ?',
+      [status, tourId]
+    );
+
+    return NextResponse.json({ message: 'Trạng thái tour đã được cập nhật' });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: 'Lỗi khi cập nhật trạng thái tour' }, { status: 500 });
+  }
+}
+

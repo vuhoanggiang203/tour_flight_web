@@ -65,7 +65,7 @@ export default function AddNewTourPage() {
     }
 
     const result = await response.json();
-    setFormData(prev => ({ ...prev, image: `/images/${result.filename}` }));
+    setFormData(prev => ({ ...prev, image: `${result.filename}` }));
     setUploading(false);
   } catch (err) {
     console.error('Lỗi mạng khi tải ảnh:', err);
@@ -108,6 +108,7 @@ export default function AddNewTourPage() {
             Tiêu đề
           </label>
           <input
+            maxLength={100}
             type="text"
             id="title"
             name="title"
@@ -137,6 +138,7 @@ export default function AddNewTourPage() {
           </label>
           <textarea
             id="description"
+            required
             name="description"
             value={formData.description}
             onChange={handleChange}
@@ -151,6 +153,7 @@ export default function AddNewTourPage() {
             type="text"
             id="location"
             name="location"
+            maxLength={200}
             value={formData.location}
             onChange={handleChange}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -164,6 +167,8 @@ export default function AddNewTourPage() {
           <input
             type="number"
             id="price"
+            min={0}
+            max={999999999}
             name="price"
             value={formData.price}
             onChange={handleChange}
@@ -178,6 +183,8 @@ export default function AddNewTourPage() {
           <input
             type="text"
             id="duration"
+            required
+            maxLength={50}
             name="duration"
             value={formData.duration}
             onChange={handleChange}
@@ -190,6 +197,7 @@ export default function AddNewTourPage() {
           </label>
           <input
             type="file"
+            required
             id="image"
             name="image"
             onChange={handleImageChange}
@@ -213,6 +221,8 @@ export default function AddNewTourPage() {
             Giảm giá (%)
           </label>
           <input
+            min={0}
+            max={100}
             type="number"
             id="discount_percentage"
             name="discount_percentage"
