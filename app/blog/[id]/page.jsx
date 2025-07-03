@@ -56,7 +56,7 @@ export default function BlogDetail({ params }) {
   }
 
   return (
-    <main className="max-w-3xl mx-auto px-4 py-12">
+    <main className="max-w-5xl mx-auto px-4 py-12">
       <h1 className="text-4xl font-extrabold text-blue-700 mb-4 tracking-tight">
         {blog.title}
       </h1>
@@ -71,13 +71,18 @@ export default function BlogDetail({ params }) {
         📅 Ngày đăng: {formatVietnamDate(blog.created_at)}
       </p>
 
-      <article className="prose prose-blue prose-lg max-w-none text-gray-800">
-        <div
-          dangerouslySetInnerHTML={{
-            __html: blog.content || "<p>Không có nội dung.</p>",
-          }}
-        />
-      </article>
+     <article className="prose prose-lg text-gray-800">
+  {blog.content
+    .split(/\r?\n/)        // Tách theo dòng
+    .filter(line => line.trim() !== '') // Bỏ dòng trống
+    .map((line, i) => (
+      <p key={i}>{line}</p>
+    ))
+  }
+</article>
+
+
+
 
       <a
         href="/blog"

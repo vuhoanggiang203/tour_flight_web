@@ -48,9 +48,15 @@ export default function BlogDetailPage() {
         />
       )}
 
-      <article className="prose prose-blue prose-lg max-w-none">
-        <div dangerouslySetInnerHTML={{ __html: blog.content }} />
-      </article>
+       <article className="prose prose-lg text-gray-800">
+  {blog.content
+    .split(/\r?\n/)        // Tách theo dòng
+    .filter(line => line.trim() !== '') // Bỏ dòng trống
+    .map((line, i) => (
+      <p key={i}>{line}</p>
+    ))
+  }
+</article>
     </div>
   );
 }

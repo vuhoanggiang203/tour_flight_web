@@ -27,6 +27,7 @@ export default function BookingPage() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [ticketClass, setTicketClass] = useState("economy");
+  const [isRoundTrip, setIsRoundTrip] = useState(false);
   // Lấy thông tin chuyến bay từ URL params
   const flightInfo = {
     from: searchParams.get("from") || "",
@@ -43,12 +44,12 @@ export default function BookingPage() {
     first: 2,
   };
 
-  const totalPrice = Math.floor(
-    (adults * pricePerAdult * priceMultiplier[ticketClass]) +
-    (children * pricePerAdult * 0.7 * priceMultiplier[ticketClass])
-  );
-
-  
+ const totalPrice = Math.floor(
+  (
+    adults * pricePerAdult * priceMultiplier[ticketClass] +
+    children * pricePerAdult * 0.7 * priceMultiplier[ticketClass]
+  ) * (isRoundTrip ? 1.8 : 1)
+);
   useEffect(() => {
     if (adults + children > 9) {
       setChildren(9 - adults);
@@ -196,7 +197,7 @@ router.push(`/passenger-info?${query}`);
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Contact Name Input */}
             <div>
-              <label htmlFor="contactName" className="block text-base font-medium text-gray-700 mb-2 flex  items-center">
+              <label htmlFor="contactName" className=" text-base font-medium text-gray-700 mb-2 flex  items-center">
                 <User className="w-5 h-5 mr-2 text-gray-500" />
                 Họ tên người liên hệ
               </label>
@@ -218,7 +219,7 @@ router.push(`/passenger-info?${query}`);
 
             {/* Phone Number Input */}
             <div>
-              <label htmlFor="contactPhone" className="block text-base font-medium text-gray-700 mb-2 flex  items-center">
+              <label htmlFor="contactPhone" className=" text-base font-medium text-gray-700 mb-2 flex  items-center">
                 <Phone className="w-5 h-5 mr-2 text-gray-500" />
                 Số điện thoại
               </label>
@@ -257,6 +258,18 @@ router.push(`/passenger-info?${query}`);
           <option value="business">Hạng thương gia (170%)</option>
           <option value="first">Hạng nhất (200%)</option>
         </select>
+      {/*Khứ hồi*/}
+       <label className=" text-base font-medium text-gray-700 mt-4 mb-2 flex items-center">Khứ hồi
+        </label>
+        <div className="flex items-center mb-4">
+          <input
+            type="checkbox"
+            checked={isRoundTrip}
+            onChange={(e) => {setIsRoundTrip(e.target.checked)}}
+            className="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+          />
+        <span className="text-gray-600">Chọn nếu bạn muốn đặt vé khứ hồi</span>
+        </div>
       </div>
             </div>
 

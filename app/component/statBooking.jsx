@@ -15,7 +15,7 @@ useEffect(() => {
     console.log(json)
     setData(json.map(item => ({
      label: filter === 'month'
-  ? `${item.name.split('-')[1]}/${item.name.split('-')[0]}` // "03/2024"
+  ? `${item.name.split('-')[1]}/${item.name.split('-')[0]}` // Định dạng tháng
   : `Năm ${item.name}`,
       count: item.count
     })))

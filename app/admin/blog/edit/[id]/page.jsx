@@ -17,6 +17,7 @@ export default function EditBlogPage() {
   const [previewImage, setPreviewImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
+const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -67,31 +68,40 @@ export default function EditBlogPage() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      const response = await fetch(`/api/blog/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
 
-      if (response.ok) {
-        alert('Cập nhật blog thành công!');
-        router.push('/admin/blog');
-      } else {
-        const errorData = await response.json();
-        console.error('Lỗi khi cập nhật blog:', errorData);
-        alert('Đã xảy ra lỗi khi cập nhật blog.');
-      }
-    } catch (err) {
-      console.error('Lỗi mạng:', err);
-      alert('Lỗi mạng khi cập nhật blog.');
+  try {
+    const response = await fetch(`/api/blog/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...formData,
+        content: formData.content.trim(),  // 👈 Gửi content đã xử lý
+      }),
+    });
+
+    if (response.ok) {
+  setShowModal(true); // ✅ Hiện modal
+  setTimeout(() => {
+    setShowModal(false);
+    router.push('/admin/blog'); // ✅ Điều hướng sau khi modal hiển
+  }, 2000); // Hiển modal trong 2 giây
+}
+ else {
+      const errorData = await response.json();
+      console.error('Lỗi khi cập nhật blog:', errorData);
+      alert('Đã xảy ra lỗi khi cập nhật blog.');
     }
-  };
+  } catch (err) {
+    console.error('Lỗi mạng:', err);
+    alert('Lỗi mạng khi cập nhật blog.');
+  }
+};
+
 
   return (
     <div className="container mx-auto py-8">
@@ -144,7 +154,6 @@ export default function EditBlogPage() {
             className="w-full border p-2 rounded min-h-[200px]"
           />
         </div>
-
         <div className="flex justify-end">
           <button
             type="button"
@@ -162,6 +171,15 @@ export default function EditBlogPage() {
           </button>
         </div>
       </form>
+      {showModal && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+      <h2 className="text-xl font-semibold text-green-600">✅ Cập nhật thành công!</h2>
+      <p className="mt-2 text-gray-700">Bạn sẽ được chuyển hướng trong giây lát...</p>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

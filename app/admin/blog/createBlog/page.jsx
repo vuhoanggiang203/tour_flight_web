@@ -78,7 +78,7 @@ export default function AddNewBlogPage() {
       const response = await fetch('/api/blog', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({...formData,content: formData.content.trim() }),
       });
 
       if (response.ok) {

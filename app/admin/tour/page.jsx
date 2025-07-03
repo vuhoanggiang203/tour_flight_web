@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ModalComfirmDeleteTour from '@/app/component/ModalComfirmDeleteTour';
 
-// Component UI cơ bản
+
 const Table = ({ children }) => (
   <div className="overflow-x-auto">
     <table className="min-w-full bg-white rounded-lg overflow-hidden">
@@ -31,10 +31,9 @@ const Button = ({ children, onClick, variant = 'primary' }) => {
   );
 };
 
-// Component chính
 export default function TourManagement() {
   const router = useRouter();
-  // Dữ liệu mẫu
+ 
   const [tours, setTours] = useState([]);
   useEffect(() => {
     const fetchTours = async () => {
@@ -42,16 +41,16 @@ export default function TourManagement() {
         const res = await fetch('/api/tour');
         const data = await res.json();
 
-        // Kiểm tra data có phải mảng không
+        
         if (Array.isArray(data)) {
           setTours(data);
         } else {
           console.error('Dữ liệu trả về không phải mảng:', data);
-          setTours([]); // fallback an toàn
+          setTours([]); 
         }
       } catch (error) {
         console.error('Lỗi khi fetch dữ liệu tour:', error);
-        setTours([]); // fallback khi lỗi
+        setTours([]); 
       }
     };
 
@@ -59,7 +58,8 @@ export default function TourManagement() {
   }, []);
 
   
-  
+  const [showStatusModal, setShowStatusModal] = useState(false);
+
   const [formData, setFormData] = useState({
     title: '',
     location: '',
@@ -68,7 +68,7 @@ export default function TourManagement() {
     status: 'active'
   });
   const toggleTourStatus = async (tour) => {
-  const updatedStatus = !tour.status;
+ const updatedStatus = tour.status === 'active' ? 'inactive' : 'active';
 
   try {
     const res = await fetch(`/api/tour/${tour.id}`, {
@@ -82,12 +82,8 @@ export default function TourManagement() {
     const data = await res.json();
 
     if (res.ok) {
-      alert('Cập nhật trạng thái thành công!');
-      setTours((prev) =>
-        prev.map((t) =>
-          t.id === tour.id ? { ...t, status: updatedStatus } : t
-        )
-      );
+       
+      window.location.reload(); 
     } else {
       alert('Lỗi cập nhật trạng thái: ' + data.error);
     }
@@ -97,7 +93,7 @@ export default function TourManagement() {
   }
 };
 
-  // Xử lý form
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -107,10 +103,10 @@ export default function TourManagement() {
     e.preventDefault();
     
     if (currentTour) {
-      // Cập nhật tour
+      
       setTours(tours.map(t => t.id === currentTour.id ? { ...formData, id: currentTour.id } : t));
     } else {
-      // Thêm tour mới
+      
       const newTour = { ...formData, id: tours.length + 1 };
       setTours([...tours, newTour]);
     }
@@ -227,6 +223,21 @@ export default function TourManagement() {
           ))}
             </tbody>
           </Table>
+            {showStatusModal && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-md max-w-sm w-full text-center">
+      <h2 className="text-lg font-semibold text-green-600 mb-2">Cập nhật trạng thái thành công!</h2>
+      <p className="text-gray-600 mb-4">Trạng thái của tour đã được thay đổi.</p>
+      <button
+        onClick={() => setShowStatusModal(false)}
+        className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+      >
+        Đóng
+      </button>
+    </div>
+  </div>
+)}
+
         </div>
 
        

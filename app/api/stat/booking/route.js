@@ -5,7 +5,7 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const filter = searchParams.get('filter') || 'month'; // 'month' hoặc 'year'
-    const type = searchParams.get('type');               // 'tour', 'flight', hoặc 'all'
+    let type = searchParams.get('type');               // 'tour', 'flight', hoặc 'all'
     const year = searchParams.get('year');               // Năm cụ thể, ví dụ: '2024'
 
     // Kiểm tra xem năm có hợp lệ không, mặc định là năm hiện tại
@@ -14,19 +14,19 @@ export async function GET(request) {
       targetYear = parseInt(year);
     }
 
-    const db = await connectDB(); // Kết nối database
+    const db = await connectDB(); 
 
     let query = '';
-    const queryParams = [targetYear]; // Bắt đầu với năm làm tham số đầu tiên
+    let queryParams = [targetYear]; // Bắt đầu với năm làm tham số đầu tiên
 
     // Xây dựng phần WHERE clause cho type
     let typeCondition = '';
     if (type && type !== 'all') {
-      typeCondition = 'AND type = ?';
-      queryParams.push(type); // Thêm type vào tham số truy vấn nếu không phải 'all'
+      typeCondition = `AND type = ${db.escape(type)}`;
+     // Thêm type vào tham số truy vấn nếu không phải 'all'
     }
 
-    // Xây dựng query SQL dựa trên filter (month/year)
+    
     if (filter === 'month') {
       query = `
         SELECT 
@@ -47,20 +47,15 @@ export async function GET(request) {
         GROUP BY name
         ORDER BY name ASC;
       `;
+      console.log('Query for year:', query);
     } else {
-     
       return NextResponse.json({ message: 'Tham số filter không hợp lệ.' }, { status: 400 });
     }
-
     // Thực thi truy vấn
     const [rows] = await db.execute(query, queryParams);
-
-    // Đóng kết nối database
    
-
-    // Trả về dữ liệu JSON
     return NextResponse.json(rows, { status: 200 });
-
+    
   } catch (error) {
     console.error('Lỗi trong API /api/stat/booking:', error);
     // Xử lý lỗi và trả về phản hồi JSON với status 500

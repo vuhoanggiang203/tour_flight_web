@@ -6,6 +6,9 @@ export default function BlogList() {
   const [blogs, setBlogs] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+const [selectedId, setSelectedId] = useState(null);
+const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetch('/api/blog')
@@ -26,24 +29,27 @@ export default function BlogList() {
       });
   }, [])
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa blog này không?')) {
-      return;
+  const handleDelete = async () => {
+  if (!selectedId) return;
+  setDeleting(true);
+  try {
+    const response = await fetch(`/api/blog/${selectedId}`, { method: 'DELETE' });
+    if (response.ok) {
+      setBlogs(prev => prev.filter(blog => blog.id !== selectedId));
+      setShowDeleteModal(false);
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Lỗi khi xóa blog.');
     }
-    try {
-      const response = await fetch(`/api/blog/${id}`, { method: 'DELETE' });
-      if (response.ok) {
-        setBlogs(blogs.filter(blog => blog.id !== id));
-        alert('Blog đã được xóa thành công!');
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Lỗi khi xóa blog.');
-      }
-    } catch (err) {
-      console.error("Error deleting blog:", err);
-      alert(`Đã xảy ra lỗi: ${err.message}`);
-    }
+  } catch (err) {
+    console.error("Error deleting blog:", err);
+    alert(`Đã xảy ra lỗi: ${err.message}`);
+  } finally {
+    setDeleting(false);
+    setSelectedId(null);
   }
+};
+
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
@@ -111,18 +117,48 @@ export default function BlogList() {
                       Sửa
                     </Link>
                     <button
-                      onClick={() => handleDelete(blog.id)}
-                      className="text-white bg-red-500  px-5 rounded py-1 hover:bg-red-600"
+                      onClick={() => {
+                        setSelectedId(blog.id);
+                        setShowDeleteModal(true);
+                      }}
+                      className="text-white bg-red-500 px-5 rounded py-1 hover:bg-red-600"
                     >
                       Xóa
                     </button>
+
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        
       )}
+      {showDeleteModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="bg-white rounded-lg p-6 shadow-md max-w-sm w-full text-center">
+      <h2 className="text-lg font-semibold text-red-600">Xác nhận xóa</h2>
+      <p className="text-gray-700 mt-2 mb-4">Bạn có chắc chắn muốn xóa blog này? Hành động này không thể hoàn tác.</p>
+
+      <div className="flex justify-center gap-4">
+        <button
+          onClick={() => setShowDeleteModal(false)}
+          className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold"
+        >
+          Hủy
+        </button>
+        <button
+          onClick={handleDelete}
+          disabled={deleting}
+          className="px-4 py-2 rounded bg-red-500 hover:bg-red-700 text-white font-semibold"
+        >
+          {deleting ? "Đang xóa..." : "Xóa"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   )
 }

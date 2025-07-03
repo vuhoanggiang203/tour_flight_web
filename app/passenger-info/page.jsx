@@ -30,7 +30,6 @@ export default function PassengerInfoPage() {
   const contactName = searchParams.get("name") || "";
   const contactPhone = searchParams.get("phone") || "";
   const totalPrice = searchParams.get("totalPrice");
-
   const from = searchParams.get("from") || "";
   const to = searchParams.get("to") || "";
   const date = searchParams.get("date") || "";
@@ -301,7 +300,7 @@ const getAge = (dobStr) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   {/* Họ và tên */}
                   <div>
-                    <label htmlFor={`name-${idx}`} className="block text-sm font-medium text-gray-700 mb-1 flex  items-center">
+                    <label htmlFor={`name-${idx}`} className=" text-sm font-medium text-gray-700 mb-1 flex  items-center">
                       <UserSquare className="w-4 h-4 mr-1.5 text-gray-500" />
                       Họ và tên
                     </label>
@@ -323,7 +322,7 @@ const getAge = (dobStr) => {
 
                   {/* Giới tính - Sử dụng thẻ select */}
                   <div>
-                    <label htmlFor={`gender-${idx}`} className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                    <label htmlFor={`gender-${idx}`} className=" text-sm font-medium text-gray-700 mb-1 flex items-center">
                       
                       Giới tính
                     </label>
@@ -351,7 +350,7 @@ const getAge = (dobStr) => {
 
                   {/* Ngày sinh - Sử dụng input type="date" */}
                   <div>
-                    <label htmlFor={`dob-${idx}`} className="block text-sm font-medium text-gray-700 mb-1 flex  items-center">
+                    <label htmlFor={`dob-${idx}`} className=" text-sm font-medium text-gray-700 mb-1 flex  items-center">
                       <CalendarDays className="w-4 h-4 mr-1.5 text-gray-500" />
                       Ngày sinh
                     </label>
@@ -374,7 +373,7 @@ const getAge = (dobStr) => {
                   {/* Hiển thị thêm trường CCCD nếu là người lớn */}
                   {p.type === "Người lớn" && (
                     <>
-                      {/* CCCD */}
+                      
                       <div>
                         <label htmlFor={`cccd-${idx}`} className=" text-sm font-medium text-gray-700 mb-1 flex  items-center">
                           <CreditCard className="w-4 h-4 mr-1.5 text-gray-500" />
@@ -385,8 +384,8 @@ const getAge = (dobStr) => {
                           type="text"
                           placeholder="Nhập số CCCD"
                           
-                          pattern="\d{12}" // Cho HTML5 kiểm tra
-                          maxLength={12} // Ngăn nhập quá dài
+                          pattern="\d{12}" 
+                          maxLength={12} 
                           className="
                             w-full px-4 py-2 border border-gray-300 rounded-lg
                             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
@@ -405,7 +404,7 @@ const getAge = (dobStr) => {
 
                       {/* Ngày hết hạn CCCD - Sử dụng input type="date" */}
                       <div>
-                        <label htmlFor={`cccd_expired-${idx}`} className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                        <label htmlFor={`cccd_expired-${idx}`} className=" text-sm font-medium text-gray-700 mb-1 flex items-center">
                           <CalendarDays className="w-4 h-4 mr-1.5 text-gray-500" />
                           Ngày hết hạn CCCD
                         </label>
@@ -457,7 +456,7 @@ const getAge = (dobStr) => {
             "
           >
             <CheckCircle className="w-6 h-6" />
-            <span>Hoàn tất & Tiếp tục</span>
+            <span>Hoàn tất & Thanh toán</span>
           </button>
         </form>
       </div>

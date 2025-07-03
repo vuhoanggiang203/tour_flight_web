@@ -3,7 +3,7 @@ import connectDB from '@/app/lib/db'
 import Link from 'next/link'
 
 export default async function BlogPage({ searchParams }) {
-  const currentPage = parseInt(searchParams.page) || 1
+  const currentPage = await parseInt(searchParams.page) || 1
   const limit = 6
   const offset = (currentPage - 1) * limit
 
@@ -52,8 +52,6 @@ export default async function BlogPage({ searchParams }) {
           </div>
         ))}
       </div>
-
-      {/* ✅ PHÂN TRANG */}
       {totalPages > 1 && (
         <div className="flex justify-center space-x-2">
           {Array.from({ length: totalPages }, (_, i) => (
